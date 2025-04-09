@@ -23,3 +23,25 @@ ollama run llama3.1
 
 Now you should be able to run the python script and recieve 6 output files
 Two responses for the three prompts
+
+# CS325-Project 2
+
+This project uses the BeautifulSoup, Requests, and lxml python packages to scrape website pages 
+online to gather buisness news heading that will be used with project 1 to determine if they 
+are positive, negative or neutral.
+
+# How to use
+
+First you will need to have python installed and install the packages BeautifulSoup, Requests, and lxml using pip
+
+```shell
+pip install BeautifulSoup
+pip install requests
+pip install lxml
+```
+
+After these are installed you should be able to run the python file if you have the siteList.txt file
+and it contains a list of websites you would like to scrape data from
+
+Once you run the python script it will create a file called webPrompts.txt that contains the headings
+you will use with project1.py eventually
