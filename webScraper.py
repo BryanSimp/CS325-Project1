@@ -14,33 +14,33 @@ Requirements:
 - Ensure siteList.txt exists and contains one URL per line.
 """
 
-from bs4 import BeautifulSoup # Import BeautifulSoup library for parsing the HTML
-import requests # Import requests library to make HTTP requests
+from bs4 import BeautifulSoup  # Import BeautifulSoup for parsing HTML
+import requests  # Import requests to make HTTP requests
 
-class WebScraper: # Define class WebScrapper
-    def __init__(self, urls_file): # Define the constructor for the class
-        self.urls_file = urls_file # Store the URL file path as an instance variable
+class Processor:
+    def process(self, input_file, output_file):
+        raise NotImplementedError("Subclasses must implement this method.")  # Force subclasses to implement this method
 
-    def scrape_headings(self, output_file): # Define the method for scraping headings and writing to output file
-        with open(self.urls_file, "r") as file: # Open the URLs file to read from
-            urls = file.read().splitlines() # Read each line and stores them in a list
+class WebScraper(Processor):  # Inherits from Processor base class
+    def __init__(self, urls_file):
+        self.urls_file = urls_file  # Store the path to the file containing URLs
 
-        with open(output_file, "w", encoding="utf-8") as output: # Opens/Creates the output file to store data
-            for url in urls: # Go through each url in the urls list
-                if not url.strip(): #check if the line is empty or just white space
-                    continue # skips to next line if empty or white space
+    def process(self, input_file=None, output_file="webPrompts.txt"):
+        with open(self.urls_file, "r") as file:  # Open the file with the list of URLs
+            urls = file.read().splitlines()  # Read all lines and split into a list
 
-                try: # start a try block to handle possible request errors
-                    response = requests.get(url) # Make HTTP get request for the current url
-                    response.raise_for_status() # Raises an error for bad responses
-
-                    soup = BeautifulSoup(response.content, "lxml") # Parses the HTML content of the response with BeautifulSoup using lxml parser
-                    headings = soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']) # Finds all heading tags from h1 to h6 in the parsed HTML
-
-                    for heading in headings: # Goes through each found heading tag
-                        text = heading.get_text(strip=True) # Get the text content of the headding tag and remove any leading or trailing whitespace
-                        if text and len(text) >= 36: # Checks if the text is not empty and has a length of 36 characters or more
-                            output.write(text + "\n") # Writes the headig text followed by a new line into the output file
-
-                except requests.RequestException as e: # Catch any execption that occures during the HTTP request
-                    print(f"Failed to fetch {url}: {e}") # Prints error messages from a failed URL request 
+        with open(output_file, "w", encoding="utf-8") as output:  # Open the output file for writing
+            for url in urls:  # Loop through each URL in the list
+                if not url.strip():  # Skip empty or whitespace-only lines
+                    continue
+                try:
+                    response = requests.get(url)  # Make an HTTP GET request to the URL
+                    response.raise_for_status()  # Raise error for bad status codes
+                    soup = BeautifulSoup(response.content, "lxml")  # Parse HTML content with BeautifulSoup
+                    headings = soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])  # Find all heading tags
+                    for heading in headings:  # Loop through each heading
+                        text = heading.get_text(strip=True)  # Get the heading text and strip whitespace
+                        if text and len(text) >= 36:  # Only keep headings with 36 or more characters
+                            output.write(text + "\n")  # Write valid heading to output file
+                except requests.RequestException as e:  # Handle request-related errors
+                    print(f"Failed to fetch {url}: {e}")  # Print error message for failed URL

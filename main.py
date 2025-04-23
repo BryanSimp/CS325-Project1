@@ -1,13 +1,11 @@
-from webScraper import WebScraper # Imports the WebScraper class from the webScraper module
-from llmGen import LLMProcessor # Imports the LLMProcessor class from the llmGen module
+from webScraper import WebScraper  # Import the WebScraper class from webScraper.py
+from llmGen import LLMProcessor    # Import the LLMProcessor class from llmGen.py
 
-def stock_checker(): 
-    # Step 1: Scrape headings # Comment indicating the start of the web scraping step
-    scraper = WebScraper("siteList.txt") # Creates an instance of the WebScraper class, passing the input file name
-    scraper.scrape_headings("webPrompts.txt") # Calls the scrape_headings method to scrape URLs from siteList.txt and save to webPrompts.txt
+def stock_checker():
+    scraper = WebScraper("siteList.txt")               # Create a WebScraper instance with the list of URLs
+    scraper.process(output_file="webPrompts.txt")      # Scrape headings and save results to webPrompts.txt
 
-    # Step 2: Run headings through LLM # Comment indicating the start of the LLM processing step
-    llm_processor = LLMProcessor() # Creates an instance of the LLMProcessor class (using the default model)
-    llm_processor.classify_headings("webPrompts.txt", "responseP3.txt") # Calls the classify_headings method to read from webPrompts.txt, process with the LLM, and save to responseP3.txt
+    llm_processor = LLMProcessor()                     # Create an LLMProcessor instance to classify headings
+    llm_processor.process("webPrompts.txt", "responseP3.txt")  # Classify scraped headings and save to responseP3.txt
 
-stock_checker()
+stock_checker()  # Call the main function to run the entire process

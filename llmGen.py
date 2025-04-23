@@ -3,7 +3,7 @@ File: llmGen.py
 Author: Bryan Simpson
 Course: CS325
 Description: This script loads prompts from text files and passes them to a 
-             local language models to classify them as Positive, Negative, or Neutral. 
+             local language model to classify them as Positive, Negative, or Neutral. 
              The responses are then saved to a new text file called responseP3.txt.
 
 Requirements:
@@ -11,19 +11,23 @@ Requirements:
 - Ensure Ollama is installed and running on your machine
 """
 
-import ollama #Import ollama library to use llms
+import ollama  # Import the Ollama library to use local language models
 
-class LLMProcessor: #Define class named LLMProecssor
-    def __init__(self, model="llama3.1"): # Define the constructor fo the class
-        self.client = ollama.Client() # Initiailze Ollama client instance
-        self.model = model # Store model name in an instance variable
-        self.instruction = "Respond to the quote with one word: Positive, Negative, or Neutral." # Store insruction for the model in an instance variable
+class Processor:
+    def process(self, input_file, output_file):
+        raise NotImplementedError("Subclasses must implement this method.")  # Force subclasses to implement this method
 
-    def classify_headings(self, input_file, output_file): # Define method to classify the headings from the input file
-        with open(input_file, 'r') as input_file: # Opens the input file to read
-            prompts = input_file.read().splitlines() # Reads each line from input file and stores them into a list
+class LLMProcessor(Processor):  # Inherits from the Processor base class
+    def __init__(self, model="llama3.1"):
+        self.client = ollama.Client()  # Create an Ollama client instance
+        self.model = model  # Store the model name
+        self.instruction = "Respond to the quote with one word: Positive, Negative, or Neutral."  # Set classification prompt
 
-        with open(output_file, 'w') as output_file: # Opens the output file to write to
-            for prompt in prompts: # Go through each prompt in the list of prompts
-                response = self.client.generate(model=self.model, prompt=self.instruction + prompt) # Send the prompt to the llm to get a response
-                output_file.write(response.response + "\n") # Write the response to the output file and create new line
+    def process(self, input_file, output_file):
+        with open(input_file, 'r') as f:  # Open the input file for reading
+            prompts = f.read().splitlines()  # Read all lines and split them into a list
+
+        with open(output_file, 'w') as f:  # Open the output file for writing
+            for prompt in prompts:  # Loop through each prompt
+                response = self.client.generate(model=self.model, prompt=self.instruction + prompt)  # Get LLM response
+                f.write(response.response + "\n")  # Write response to output file
